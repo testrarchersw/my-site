@@ -1,4 +1,4 @@
-name: Deploy Production
+name: Promote Production Release
 
 on:
   push:
@@ -13,21 +13,50 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy-production:
-    name: Deploy tagged release
+  promote-production:
+    name: Stage and promote tagged release
     runs-on: ubuntu-latest
+
+    # Configure this environment in:
+    # GitHub > Settings > Environments > production
     environment: production
+
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
       - name: Check out tagged commit
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Verify tag commit is on main
+      - name: Validate release tag
+        shell: bash
         run: |
-          git fetch origin main --depth=1
+          set -euo pipefail
+
+          TAG="${GITHUB_REF_NAME}"
+
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $TAG"
+            echo "Expected a tag such as v1.2.3"
+            exit 1
+          fi
+
+          echo "Releasing $TAG from commit $GITHUB_SHA"
+
+      - name: Verify tagged commit is on main
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
 
           if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/main"; then
-            echo "The tagged commit is not part of the main branch."
+            echo "The tagged commit is not contained in origin/main."
+            echo "Only commits already deployed to Staging may be released."
             exit 1
           fi
 
@@ -44,22 +73,88 @@ jobs:
         run: npm install --global vercel@latest
 
       - name: Pull Production configuration
-        run: vercel pull --yes --environment=production
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull \
+            --yes \
+            --environment=production \
+            --token="$VERCEL_TOKEN"
 
-      - name: Build for Production
-        run: vercel build --prod
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Build Production artifact
+        run: |
+          vercel build \
+            --prod \
+            --token="$VERCEL_TOKEN"
 
-      - name: Deploy to Production
-        run: vercel deploy --prebuilt --prod
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Create staged Production deployment
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DEPLOYMENT_URL="$(
+            vercel deploy \
+              --prebuilt \
+              --prod \
+              --skip-domain \
+              --yes \
+              --token="$VERCEL_TOKEN"
+          )"
+
+          DEPLOYMENT_URL="$(echo "$DEPLOYMENT_URL" | tail -n 1)"
+
+          if [[ ! "$DEPLOYMENT_URL" =~ ^https:// ]]; then
+            echo "Vercel did not return a valid deployment URL."
+            echo "Received: $DEPLOYMENT_URL"
+            exit 1
+          fi
+
+          echo "deployment_url=$DEPLOYMENT_URL" >> "$GITHUB_OUTPUT"
+          echo "Staged Production deployment: $DEPLOYMENT_URL"
+
+      - name: Wait for staged deployment
+        shell: bash
+        run: |
+          vercel inspect \
+            "${{ steps.deploy.outputs.deployment_url }}" \
+            --wait \
+            --timeout=5m \
+            --token="$VERCEL_TOKEN"
+
+      - name: Smoke test staged deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          URL="${{ steps.deploy.outputs.deployment_url }}"
+
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 5 \
+            --retry-delay 5 \
+            "$URL" \
+            > /dev/null
+
+          echo "Smoke test passed: $URL"
+
+      - name: Promote deployment to Production
+        shell: bash
+        run: |
+          vercel promote \
+            "${{ steps.deploy.outputs.deployment_url }}" \
+            --yes \
+            --timeout=5m \
+            --token="$VERCEL_TOKEN"
+
+      - name: Write deployment summary
+        shell: bash
+        run: |
+          {
+            echo "## Production release promoted"
+            echo
+            echo "- **Tag:** \`${GITHUB_REF_NAME}\`"
+            echo "- **Commit:** \`${GITHUB_SHA}\`"
+            echo "- **Deployment:** ${{ steps.deploy.outputs.deployment_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"
