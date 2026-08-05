@@ -34,7 +34,7 @@ jobs:
 
       - name: Create GitHub release
         if: steps.release.outputs.tag != ''
-        uses: ncipollo/release-action@v2
+        uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.release.outputs.tag }}
           body: ${{ steps.release.outputs.release_notes }}
