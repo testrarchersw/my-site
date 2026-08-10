@@ -1,0 +1,34 @@
+# Changelog
+
+### 10-08-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
+
+  * changing version in package json
+  * tweaks to auto tag workflow
+
+### 05-08-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
+
+  * **feat:** testing new script
+  * **fix:** handle empty input
+  * Checking our conventional release action
+
+### 29-07-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
+
+  * new workflow including promote
+  * More detailed deploy worflow
+  * tweaking deploy script
+  * fixing variable in workflow
+
+### 28-07-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
+
+  * github workflow to deploy tags to prod
+  * Making an edit to page.tsx
+  * removing vercel json
+
+### 27-07-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
+
+  * vercel json disabling auto deployments
+  * Edited page tsx
+
+### 24-07-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
+
+  * Initial commit from Create Next App
