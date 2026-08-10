@@ -2,8 +2,16 @@
 
 ### 10-08-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
 
+  * hardcoded text change
+  * test production promotion
+  * adding deploy step to create release flow
+  * new deploy tags triggerable by other workflows
   * changing version in package json
   * tweaks to auto tag workflow
+
+### 10-08-2026 - [[Conventional Release Action](mailto:conventional-release@onesoftnet.eu.org)]
+
+  * **chore(release):** v0.1.0 [skip ci]
 
 ### 05-08-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
 
