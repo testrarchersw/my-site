@@ -2,6 +2,21 @@
 
 ### 14-08-2026 - [[testrarchersw](mailto:rarcher.sourcewell@gmail.com):[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
 
+  * **fix:** Develop (#22)    
+      
+    * next commit  
+      
+    * targeting development env instead of prod  
+      
+    * removing skip domain flag  
+      
+    * removing prebuilt  
+      
+    * commit  
+      
+    ---------  
+      
+    **Co-authored-by:**  Robert Archer <robert.archer@sourcewell-mn.gov>  
   * **fix:** Develop (#21)    
       
     * next commit  
@@ -38,6 +53,7 @@
 
 ### 14-08-2026 - [[Conventional Release Action](mailto:conventional-release@onesoftnet.eu.org)]
 
+  * **chore(release):** v0.3.2 [skip ci]
   * **chore(release):** v0.3.1 [skip ci]
   * **chore(release):** v0.3.0 [skip ci]
 
