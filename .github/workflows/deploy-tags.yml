@@ -106,7 +106,6 @@ jobs:
             vercel deploy \
               --prebuilt \
               --target=Development \
-              --skip-domain \
               --yes \
               --token="$VERCEL_TOKEN"
           )"
