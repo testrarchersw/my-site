@@ -104,7 +104,7 @@ jobs:
 
           DEPLOYMENT_URL="$(
             vercel deploy \
-              --target=Development \
+              --target=development \
               --yes \
               --token="$VERCEL_TOKEN"
           )"
