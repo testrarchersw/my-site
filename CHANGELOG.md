@@ -1,5 +1,22 @@
 # Changelog
 
+### 14-08-2026 - [[testrarchersw](mailto:rarcher.sourcewell@gmail.com):[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
+
+  * **feat:** Develop (#19)    
+      
+    * next commit  
+      
+    * targeting development env instead of prod  
+      
+    ---------  
+      
+    **Co-authored-by:**  Robert Archer <robert.archer@sourcewell-mn.gov>  
+
+### 10-08-2026 - [[Conventional Release Action](mailto:conventional-release@onesoftnet.eu.org)]
+
+  * **chore(release):** v0.2.0 [skip ci]
+  * **chore(release):** v0.1.0 [skip ci]
+
 ### 10-08-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
 
   * hardcoded text change
@@ -8,10 +25,6 @@
   * new deploy tags triggerable by other workflows
   * changing version in package json
   * tweaks to auto tag workflow
-
-### 10-08-2026 - [[Conventional Release Action](mailto:conventional-release@onesoftnet.eu.org)]
-
-  * **chore(release):** v0.1.0 [skip ci]
 
 ### 05-08-2026 - [[Robert Archer](mailto:robert.archer@sourcewell-mn.gov)]
 
