@@ -1,20 +1,25 @@
-name: Promote Production Release
+name: Deploy Tagged Release
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
-
-  workflow_call:
+  workflow_dispatch:
     inputs:
       tag:
-        description: Release tag to promote
+        description: Release tag to deploy
         required: true
         type: string
 
+      environment:
+        description: Vercel environment to deploy to
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+
 permissions:
   contents: read
-
+  
 concurrency:
   group: vercel-production
   cancel-in-progress: false
